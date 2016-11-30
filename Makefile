@@ -1,8 +1,9 @@
-all:: git-credential-osxkeychain
+all:: git-credential-osxkeychain git-credential-osxkeychain-fallback
 
 CC = gcc
 RM = rm -f
 CFLAGS = -g -O2 -Wall
+FALLBACK = -DENABLE_FALLBACK
 
 -include ../../../config.mak.autogen
 -include ../../../config.mak
@@ -13,5 +14,14 @@ git-credential-osxkeychain: git-credential-osxkeychain.o
 git-credential-osxkeychain.o: git-credential-osxkeychain.c
 	$(CC) -c $(CFLAGS) $<
 
+git-credential-osxkeychain-fallback: git-credential-osxkeychain-fallback.o
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -Wl,-framework -Wl,Security
+
+git-credential-osxkeychain-fallback.o: git-credential-osxkeychain.c
+	$(CC) -c $(CFLAGS) $(FALLBACK) -o $@ $<
+
 clean:
-	$(RM) git-credential-osxkeychain git-credential-osxkeychain.o
+	$(RM) git-credential-osxkeychain git-credential-osxkeychain.o \
+	git-credential-osxkeychain-fallback git-credential-osxkeychain-fallback.o
+
+.PHONY: clean

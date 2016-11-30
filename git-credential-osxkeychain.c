@@ -69,8 +69,20 @@ static void find_internet_password(void)
 	UInt32 len;
 	SecKeychainItemRef item;
 
-	if (SecKeychainFindInternetPassword(KEYCHAIN_ARGS, &len, &buf, &item))
+	if (SecKeychainFindInternetPassword(KEYCHAIN_ARGS, &len, &buf, &item)) {
+#ifdef ENABLE_FALLBACK
+		if (path) {
+			free(path);
+			path = NULL;
+			if (SecKeychainFindInternetPassword(KEYCHAIN_ARGS, &len, &buf, &item))
+				return;
+		} else {
+			return;
+		}
+#else
 		return;
+#endif /* ENABLE_FALLBACK */
+	}
 
 	write_item("password", buf, len);
 	if (!username)
