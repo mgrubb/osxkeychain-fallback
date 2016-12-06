@@ -24,4 +24,7 @@ clean:
 	$(RM) git-credential-osxkeychain git-credential-osxkeychain.o \
 	git-credential-osxkeychain-fallback git-credential-osxkeychain-fallback.o
 
-.PHONY: clean
+fallback-install:: git-credential-osxkeychain-fallback
+	cp git-credential-osxkeychain-fallback /usr/local/bin
+
+.PHONY: clean fallback-install
